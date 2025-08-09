@@ -1,0 +1,31 @@
+name: Deploy and Notify
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run main script
+        run: python main.py
+
+      - name: Notify Pipedream
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"text":"Deployment complete"}' \
+            "${{ secrets.PD_WEBHOOK_URL }}"
